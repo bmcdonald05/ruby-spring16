@@ -5,6 +5,8 @@
 # The user should be prompted to enter their pin anytime they call display_balance, withdraw, or deposit.
 # pin_error should contain  "Access denied: incorrect PIN." and be puts when the user types the wrong pin.
 
+##### May want to create method for "question" for the pin prompt. DRY
+
 class Account
 	def initialize(name, balance, pin)
 		@name = name
@@ -28,7 +30,7 @@ class Account
 			take_out = gets.chomp.to_i
 			if take_out <= @balance
 				@balance -= take_out
-				puts "Thank you have #{@balance} left in your account."
+				puts "Thank you, you have #{@balance} left in your account."
 			else 
 				puts "I am sorry you only have #{@balance} left in you account."
 			end
