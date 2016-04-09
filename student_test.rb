@@ -35,8 +35,8 @@ class Student
 		puts "Are you ready to take the test? Y/N"
 		input = gets.chomp.upcase
 		if input == "Y"
-			test
-		elsif input == "N"
+			exam
+		else input == "N"
 			puts "Come back when you are ready!"
 			exit
 		end			
@@ -48,7 +48,7 @@ class Student
 	def incorrect
 		puts "I am sorry that is incorrect."
 	end
-	def test
+	def exam
 		ques1
 		ques2
 		ques3
@@ -65,7 +65,7 @@ class Student
 			puts "Would you like to retake the test? Y/N"
 			response = gets.chomp.upcase
 			if response == "Y"
-				test
+				exam
 			else
 				puts "Come back when you are ready!"
 			end
