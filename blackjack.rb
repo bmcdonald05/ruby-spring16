@@ -16,14 +16,7 @@ class Deck
 		2.times do 
 			@cards<<@value.sample
 			@cards<<@suit.sample
-			# @suit.each do |suit|
-			# 	@value.each do |number|
-			# 		cards<<(suit, number)
-			# 	end
-			# end
-			@cards
 		end
-		first_move
 	end
 	def check_hand
 		@hidden_hand = @cards.select {|val| val.length < 3 }
@@ -37,39 +30,84 @@ class Deck
 			end
 				}
 		p @cards
-		@hand_total = @hidden_hand.reduce(:+)
-		#p @hand_total
+		@player_total = @hidden_hand.reduce(:+)
+		@comp_total = @hidden_hand.reduce(:+)
+	end
+	def comp_choice
+		puts "The dealer has #{check_hand}"
+		if @comp_total > @player_total
+			puts "The dealer wins, better luck next time."
+		else
+			if @comp_total < 18 
+				puts "The dealer hits"
+				comp_hit
+			else
+				puts "The house does not hit on 18 or above."
+				final_tally
+			end
+		end
+	end
+	def comp_hit
+		# @cards<<@value.sample
+		# @cards<<@suit.sample
+		# @comp_total = @hidden_hand.reduce(:+)
+		# puts "The dealer has #{check_hand}"
+		# comp_choice
+	end
+	def choices
+		puts "Would you like to hit or stay?"
+		response = gets.chomp.downcase
+		if response == "hit"
+			hit
+		elsif response == "stay"
+		else
+			puts "That is not an option."
+			first_move
+		end
 	end
 	def first_move
 		puts "It looks like you have #{check_hand}"
-		if @hand_total == 21
+		if @player_total == 21
 			puts "Blackjack!! You win!"
+			abort
 		else 
-			puts "Would you like to hit or stay?"
-			response = gets.chomp.downcase
-			if response == "hit"
-				hit
-			elsif response == "stay"
-				stay
-			else
-				puts "That is not an option."
-				first_move
-			end	
+			choices
 		end
 	end
 	def hit
 		@cards<<@value.sample
 		@cards<<@suit.sample
-		check_hand
+		@player_total = @hidden_hand.reduce(:+)
 		puts "It looks like you have #{check_hand}"
+		if @player_total > 21
+			puts "Sorry, it looks like you went over 21 and lose. Better luck next time!"
+			abort
+		elsif @player_total == 21
+			puts "Blackjack!! You win!"
+			abort
+		else
+			choices
+		end
 	end
-	def stay
-		
+	def final_tally
+		puts "Final tally. The dealer has #{@comp_total}, and the player has #{@player_total}"
+		if @comp_total == @player_total
+			puts "It's a push."
+		elsif @comp_total > @player_total
+			puts "The dealer wins, better luck next time."
+		else
+			puts "You win!!"
+		end
 	end
 end
 
-deck1 = Deck.new
-deck1.build_hand
+player1 = Deck.new
+comp_deck = Deck.new
+player1.build_hand
+comp_deck.build_hand
+player1.first_move
+comp_deck.comp_choice
+
 
 
 
@@ -87,14 +125,6 @@ deck1.build_hand
 #   players<<input
 # end
 # players.pop
-
-
-
-
-
-
-
-
 
 # class Card
 #   attr_reader :suit, :value
