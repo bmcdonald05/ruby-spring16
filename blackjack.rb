@@ -38,11 +38,11 @@ class Deck
 		if @comp_total > @player_total
 			puts "The dealer wins, better luck next time."
 		else
-			if @comp_total < 18 
+			if @comp_total < 17 
 				puts "The dealer hits"
 				comp_hit
 			else
-				puts "The house does not hit on 18 or above."
+				puts "The house does not hit on 17 or above."
 				final_tally
 			end
 		end
@@ -90,14 +90,17 @@ class Deck
 		end
 	end
 	def final_tally
-		puts "Final tally. The dealer has #{@comp_total}, and the player has #{@player_total}"
-		if @comp_total == @player_total
-			puts "It's a push."
-		elsif @comp_total > @player_total
-			puts "The dealer wins, better luck next time."
-		else
-			puts "You win!!"
-		end
+		puts "The dealer has #{@comp_total}, and the player has #{@player_total}"
+		# puts "Final tally. The dealer has #{@comp_total}, and the player has #{@player_total}"
+		# if @comp_total > 21
+		# 	puts "The dealer busts. The player wins."
+		# elsif @comp_total == @player_total
+		# 	puts "It's a push."
+		# elsif @comp_total > @player_total
+		# 	puts "The dealer wins, better luck next time."
+		# else
+		# 	puts "You win!!"
+		# end
 	end
 end
 
