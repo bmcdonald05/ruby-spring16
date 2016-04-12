@@ -1,107 +1,143 @@
-class Card
-
-  attr_reader :suit, :value
-  def initialize(suit, value)
-    @suit = suit
-    @value = value
+class Casino
+  attr_accessor :start, :stack, :bet
+  def initialize
   end
-
-  def value
-    return 10 if ["J", "Q", "K"].include?(@value)
-    return 11 if @value == "A"
-    return @value
+  def stack
+    puts "How much in chips would you like?"
+    @stack = gets.chomp.to_i
   end
-
-  def to_s
-    "#{@value}-#{suit}"
+  def bet
+    puts "This table has a $5 minimum. How much would you like to bet?"
+    @chips = gets.chomp.to_i
+    @stack = @stack - @chips
   end
-
+  def start
+    puts "Welcome to The Venetian! Let's play some Blackjack!"
+  end
 end
 
-
-class Deck
-  attr_reader :cards
-
+class GamePlay < Casino
+  attr_accessor :name, :dealer, :hit, :deal, :winner
   def initialize
-    @cards = Deck.build_cards
+    name
+    start
+    stack
+    bet
+    deal
+    winner
   end
-
-  def self.build_cards
-    cards = []
-    [:clubs, :diamonds, :spades, :hearts].each do |suit|
-      (2..10).each do |number|
-        cards << Card.new(suit, number)
-      end
-      ["J", "Q", "K", "A"].each do |facecard|
-        cards << Card.new(suit, facecard)
-      end
+  def name
+    @players = []
+    reply = ""
+    puts "Please enter the first name of all players, then enter 'done'"
+    until reply == "done"
+      reply = gets.chomp.downcase
+      @players<<reply
     end
-    cards.shuffle
+    @players.pop
   end
-end
-
-class Hand
-  attr_reader :cards
-
-  def initialize
-    @cards = []
+  def dealer
+    @dealer = dealer
   end
-  def hit!(deck)
-    @cards << deck.cards.shift
-  end
-
-  def value
-    cards.inject(0) {|sum, card| sum += card.value }
-  end
-
-  def play_as_dealer(deck)
-    if value < 16
-      hit!(deck)
-      play_as_dealer(deck)
-    end
-  end
-end
-
-class Game
-  attr_reader :player_hand, :dealer_hand
-  def initialize
-    @deck = Deck.new
-    @player_hand = Hand.new
-    @dealer_hand = Hand.new
-    2.times { @player_hand.hit!(@deck) } 
-    2.times { @dealer_hand.hit!(@deck) }
-  end
-
   def hit
-    @player_hand.hit!(@deck)
+    @deck = ['A', 'a', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K']
+    @suits = ['Hearts', 'Diamonds', 'Spades', 'Clubs']
+    @hand = []
+    @deal_card = @deck.shuffle[1]
+    @dealer_card = @deal_card
+    @hand<<"#{@deal_card} ""#{@suits.shuffle[1]}"
   end
-
-  def stand
-    @dealer_hand.play_as_dealer(@deck)
-    @winner = determine_winner(@player_hand.value, @dealer_hand.value)
-  end
-
-  def status
-    {:player_cards=> @player_hand.cards, 
-     :player_value => @player_hand.value,
-     :dealer_cards => @dealer_hand.cards,
-     :dealer_value => @dealer_hand.value,
-     :winner => @winner}
-  end
-
-  def determine_winner(player_value, dealer_value)
-    return :dealer if player_value > 21
-    return :player if dealer_value > 21
-    if player_value == dealer_value
-      :push
-    elsif player_value > dealer_value
-      :player
+  def deal
+    b = [10]
+    c = [11]
+    d = [1]
+    @player_hand = []
+    @dealer_hand = []
+    @players.each do |shark|
+      puts "#{shark}: "
+      2.times do
+        puts hit
+        @player_hand<<@deal_card
+      end
+    end
+    puts "Would you like to hit?"
+    reply = gets.chomp.downcase
+    if reply == "yes"
+      puts hit
+      @player_hand<<@deal_card
+      puts "Would you like to hit again?"
+      reply = gets.chomp.downcase
+      if reply == "yes"
+        puts hit
+        @player_hand<<@deal_card
+      else
+        puts "No problem"
+      end
     else
-      :dealer
+      puts "No problem."
+    end
+    @player_hand.map! { |x| x == 'J' ? b : x }.flatten!
+    @player_hand.map! { |x| x == 'Q' ? b : x }.flatten!
+    @player_hand.map! { |x| x == 'K' ? b : x }.flatten!
+    @player_hand.map! { |x| x == 'A' ? c : x }.flatten!
+    @player_hand.map! { |x| x == 'a' ? d : x }.flatten!
+    puts "You have #{@player_hand.inject(:+)}"
+    puts "Dealer: "
+    2.times do
+      puts hit
+      @dealer_hand<<@deal_card
+    end
+    @dealer_hand.map! { |x| x == 'J' ? b : x }.flatten!
+    @dealer_hand.map! { |x| x == 'Q' ? b : x }.flatten!
+    @dealer_hand.map! { |x| x == 'K' ? b : x }.flatten!
+    @dealer_hand.map! { |x| x == 'A' ? c : x }.flatten!
+    @dealer_hand.map! { |x| x == 'a' ? d : x }.flatten!
+    until @dealer_hand.inject(:+) > 15
+      puts hit
+      @dealer_hand<<@deal_card
+    end
+    puts "The Dealer has #{@dealer_hand.inject(:+)}"
+  end
+  def winner
+    if @dealer_hand.inject(:+) > 21
+      abort "The Dealer busts!"
+    end
+    if @player_hand.inject(:+) > 21
+      abort "You busted!"
+    end
+    if @dealer_hand.inject(:+) >= @player_hand.inject(:+)
+      dealer_wins
+      puts "Would you like to play again?"
+      reply = gets.chomp.downcase
+      if reply == "yes"
+        bet
+        deal
+        winner
+      end
+    elsif @player_hand.inject(:+) > @dealer_hand.inject(:+)
+      you_win
+      puts "Would you like to play again?"
+      reply = gets.chomp.downcase
+      if reply == "yes"
+        bet
+        deal
+        winner
+      end
     end
   end
-
-  def inspect
-    status
+  def you_win
+    puts "You win!"
+    puts "You just won #{@chips * 2} dollars!"
+    @stack = @stack + (@chips * 2)
+    puts "Now you have #{@stack} dollars!"
+  end
+  def dealer_wins
+    puts "The Dealer wins, you lost"
+    puts "You just lost #{@chips * 2} dollars."
+    @stack = @stack - (@chips)
+    puts "You now have #{@stack} dollars."
   end
 end
+
+
+player1 = GamePlay.new

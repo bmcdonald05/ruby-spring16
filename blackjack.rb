@@ -1,11 +1,3 @@
-# Build blackjack
-# For level 1 include at least 2 players(you and the computer.)
-# You should include the hit(deal another card) or stand(don't deal another card)
-# The dealer(the computer) should make it's own decision as to when it should hit and when it should stand. 
-# So you shouldn't be inputting hit or stand for it.
-# Your app should declare a winner as soon as someone reaches 21, someone exceeds 21(they lose), 
-# or if both you and the computer stand.
-
 class Deck
 	def initialize
 		@value = %w[2 3 4 5 6 7 8 9 10 J Q K A].shuffle!
