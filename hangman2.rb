@@ -9,7 +9,7 @@ end
 def get_word
 	dictionary = %w[man word apple daily person lamb lion fact false carrot lemon lime carry shout monsoon]
 	@word = dictionary.sample
-	# p @word
+	p @word
 	@word_arr = @word.scan(/./)
 	@word_arr2 = @word.scan(/./)
 	puts "The word has #{@word.length} letters in it."
@@ -24,6 +24,7 @@ def guess_game
 			puts "#{guess} is indeed one of the letters!"
 			@word_arr2.delete_if {|x| x == guess}
 			@correct_ans +=1
+			p @word_arr2
 		else
 			puts "#{guess} is not one of the letters."
 			@tries -=1
@@ -53,6 +54,10 @@ ________
 '
 end
 
+
+@word_arr2.map do |arr|
+  arr.map { |s| s unless s.empty? }
+end
 
 
 
