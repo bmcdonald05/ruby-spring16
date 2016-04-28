@@ -1,64 +1,95 @@
-
-def intro
-	puts "Lets play a game of Hangman"
-	puts "You have to guess letters and find out the word I am thinking of"
-	puts "If you guess 6 letters that are NOT in the word, you lose!"
-	puts "Let us begin!"
+def playagain
+puts "Would you like to play again? (y/n)"
+  ans=gets.chomp.downcase
+    if ans=="y"
+      gamestart
+    elsif ans=='n'
+      abort
+    else
+      playagain
+    end
 end
 
-def get_word
-	dictionary = %w[man word apple daily person lamb lion fact false carrot lemon lime carry shout monsoon]
-	@word = dictionary.sample
-	p @word
-	@word_arr = @word.scan(/./)
-	@word_arr2 = @word.scan(/./)
-	puts "The word has #{@word.length} letters in it."
+def didyouwin
+  if (@ans_array<=>@OG_array)==0
+    p @ans_array
+      puts "Congrats! You won!"
+        playagain
+  end
 end
 
-def guess_game
-	until @tries == 0 || @word_arr2.length == 0
-		puts "Guess a letter"
-		guess = gets.chomp.downcase
-		puts "You guessed #{guess}"
-		if @word_arr.include?(guess)
-			puts "#{guess} is indeed one of the letters!"
-			@word_arr2.delete_if {|x| x == guess}
-			@correct_ans +=1
-			p @word_arr2
-		else
-			puts "#{guess} is not one of the letters."
-			@tries -=1
-		end
-		puts "You have guessed #{@correct_ans} of the #{@word.length} letters, and have #{@tries} attempts left"
-		guess_game
-	end
+def replace
+  @keynum=@mod_array.index{|a| a==@guess} #finds index of guessed letter
+    @ans_array.delete_at(@keynum)         #replaces array of blanks with letter
+      @ans_array.insert(@keynum,@guess)
+    @mod_array.delete_at(@keynum)         #replaces changing array with nil, so we can re-check
+      @mod_array.insert(@keynum,nil)
+         didyouwin
+          if @mod_array.include?(@guess)==true   #checks if the letter occurs more than once in the word
+           replace
+         end
 end
 
-@correct_ans = 0
-@tries = 6
-intro
-get_word
-guess_game
-if @word_arr2.length == 0
-	puts "You guessed the word! it was '#{@word}'"
-else
-	puts "You didn't guess the word, it was #{@word}. Look what you did!!!"
-	puts  '
-________
-|      |
-|      O
-|     \|/ 
-|      |
-|     / \
-|
-'
+def wrong_ans
+  @tries-=1
+    if @tries==0
+      puts "The hangman is dead. Game over."
+        playagain
+    else
+      puts "You have #{@tries} tries left before the hangman meets his maker."
+        guessround
+    end
 end
 
-
-@word_arr2.map do |arr|
-  arr.map { |s| s unless s.empty? }
+def fullguess
+    puts "Okay, what's your guess?"
+      word_guess=gets.chomp.upcase
+        if (word_guess<=>@OG_array.join)==0
+          puts "Whoa, you guessed right! You win!"
+            playagain
+        else
+          puts "Sorry, that's not it."
+            wrong_ans
+        end
 end
 
+def guessround
+puts "Would you like to guess the word, or a letter? (w/l)"
+  guess_type=gets.chomp.downcase
+    if guess_type=="w"
+      fullguess
+    elsif guess_type=="l"
+      puts "Please name a letter that you think is in the word." #make recursive; branch conditional to check if guess is a letter
+        @guess=gets.chomp.upcase
+          if @mod_array.include?(@guess)==true
+            puts "Correct."
+            replace
+              p @ans_array
+              guessround
+          else
+            puts "Wrong."
+            wrong_ans
+          end
+    else
+      puts "Sorry, I didn't understand that. Please enter w or l."
+        guessround
+    end
+end
 
+def gamestart
+  puts "Let's play Hangman. Please get someone to enter a word."
+    @ans_array=[]
+    @tries=6
+      @word=gets.chomp.upcase
+        @OG_array=@word.split(//)
+        @mod_array=@word.split(//) #can't set @mod_array=@OG_array, or any change to one will change the other
+          @OG_array.count.times do
+            @ans_array.push("_")
+          end
+          25.times do
+            puts " "
+          end
+            guessround
+end
 
-
+gamestart
